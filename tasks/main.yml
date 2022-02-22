@@ -1,6 +1,6 @@
 ---
 # tasks file for ansible-etc-hosts
-- name: pre-reqs (RedHat)
+- name: pre-reqs (RedHat EL7)
   yum:
     name: ["libselinux-python"]
     state: present
@@ -9,9 +9,22 @@
   until: result is successful
   when: >
     ansible_os_family == "RedHat" and
+    ansible_distribution_major_version < "8" and
     ansible_distribution != "Fedora"
 
-- name: pre-reqs (RedHat)
+- name: pre-reqs (RedHat EL8)
+  dnf:
+    name: ["python3-libselinux"]
+    state: present
+  become: true
+  register: result
+  until: result is successful
+  when: >
+    ansible_os_family == "RedHat" and
+    ansible_distribution_major_version >= "8" and
+    ansible_distribution != "Fedora"
+
+- name: pre-reqs (RedHat Fedora)
   dnf:
     name: ["libselinux-python"]
     state: present
